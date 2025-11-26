@@ -61,31 +61,39 @@ const questions: Question[] = [
 ];
 
 type TransformedQuestion = Question & {
-  answers: {answer: string, isValid: boolean}[];
+  answers: { answer: string; isValid: boolean }[];
 };
 
 const transformedQuestions: TransformedQuestion[] = questions.map(
   (question) => ({
     ...question,
-    answers: [
-      question.answer,
-      ...question.badAnswers,
-    ].sort(() => Math.random() - 0.5),
+    answers: [question.answer, ...question.badAnswers].sort(
+      () => Math.random() - 0.5
+    ),
   })
 );
 
 Alpine.store("quizz", {
   currentQuestionIndex: 0,
-  selectedAnswer: '',
+  selectedAnswer: "",
   isSubmitted: false,
-  get currentQuestion () {
-    return transformedQuestions[this.currentQuestionIndex]
+  get currentQuestion() {
+    return transformedQuestions[this.currentQuestionIndex];
   },
-  onSubmitQuestion () {
-    if(this.selectedAnswer) {
-        this.isSubmitted = true
+  onSubmitQuestion() {
+    if (this.selectedAnswer) {
+      this.isSubmitted = true;
     }
-  }
+  },
+  nextQuestion() {
+    if (this.currentQuestionIndex < transformedQuestions.length - 1) {
+      this.currentQuestionIndex = this.currentQuestionIndex + 1;
+      this.isSubmitted = false;
+      this.selectedAnswer = "";
+    } else {
+        alert('Votre score est ...')
+    }
+  },
 });
 
 Alpine.start();

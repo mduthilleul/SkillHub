@@ -41,7 +41,7 @@
           </template>
           <div class="card-actions">
             <button class="btn btn-primary btn-xs" type="submit">Valider</button>
-            <button class="btn btn-primary btn-xs" type="submit" x-bind:disabled="!isSubmitted">Suivant</button>
+            <button class="btn btn-primary btn-xs" type="button" x-bind:disabled="!isSubmitted" x-on:click="nextQuestion()">Suivant</button>
           </div>
         </form>
       </div>
