@@ -29,23 +29,31 @@
   </div>
 
   <div x-data="$store.quizz">
-    <div class="card card-border bg-base-100 w-96">
-      <div class="card-body">
-        <h2 class="card-title" x-text="currentQuestion.question"></h2>
-        <form x-on:submit.prevent="onSubmitQuestion">
-          <template x-for="answer in currentQuestion.answers">
-            <div class="flex items-center gap-2">
-              <input type="radio" name="selectedAnswer" x-model="selectedAnswer" x-bind:value="answer" class="radio-sm" x-bind:disabled="isSubmitted" />
-              <label for="selectedAnswer" x-text="answer" x-bind:class="isSubmitted ? (answer === currentQuestion.answer ? 'text-green-500' : 'text-red-500') : ''" ></label>
+    <template x-if="isLoading">
+      <span>Loading...</span>
+    </template>
+    <template x-if="!isLoading">
+      <div class="card card-border bg-base-100 w-96">
+        <div class="card-body">
+          <h2 class="card-title" x-text="currentQuestion.question"></h2>
+          <form x-on:submit.prevent="onSubmitQuestion">
+            <template x-for="answer in currentQuestion.answers">
+              <div class="flex items-center gap-2">
+                <input type="radio" name="selectedAnswer" x-model="selectedAnswer" x-bind:value="answer"
+                  class="radio-sm" x-bind:disabled="isSubmitted" />
+                <label for="selectedAnswer" x-text="answer"
+                  x-bind:class="isSubmitted ? (answer === currentQuestion.answer ? 'text-green-500' : 'text-red-500') : ''"></label>
+              </div>
+            </template>
+            <div class="card-actions">
+              <button class="btn btn-primary btn-xs" type="submit">Valider</button>
+              <button class="btn btn-primary btn-xs" type="button" x-bind:disabled="!isSubmitted"
+                x-on:click="nextQuestion()">Suivant</button>
             </div>
-          </template>
-          <div class="card-actions">
-            <button class="btn btn-primary btn-xs" type="submit">Valider</button>
-            <button class="btn btn-primary btn-xs" type="button" x-bind:disabled="!isSubmitted" x-on:click="nextQuestion()">Suivant</button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
-    </div>
+    </template>
 
   </div>
 

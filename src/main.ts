@@ -12,73 +12,36 @@ type Question = {
   badAnswers: string[];
 };
 
-const questions: Question[] = [
-  {
-    id: "cmck8wdut001shzrohzz0l96x",
-    question: "Quelle série de film de S-F a été réalisée par les Wachowski ?",
-    answer: "Matrix",
-    categoryId: "cmck8wdgi0003hzroikw9krfe",
-    category: "tv_cinema",
-    difficulty: "facile",
-    badAnswers: ["Star Wars", "Retour vers le futur", "Star Trek"],
-  },
-  {
-    id: "cmck8wdv7007khzroqkpjtogv",
-    question: "qui a réalisé le film Avatar ?",
-    answer: "James Cameron",
-    categoryId: "cmck8wdgi0003hzroikw9krfe",
-    category: "tv_cinema",
-    difficulty: "facile",
-    badAnswers: ["Bob Marley", "jean Dujardin", "Samuel Etienne"],
-  },
-  {
-    id: "cmguz1h970003hzaup5qeleap",
-    question: "Dans quelle série apparaît le personnage Walter White ?",
-    answer: "Breaking Bad",
-    categoryId: "cmck8wdgi0003hzroikw9krfe",
-    category: "tv_cinema",
-    difficulty: "facile",
-    badAnswers: ["Narcos", "Dexter", "The Sopranos"],
-  },
-  {
-    id: "cmck8wdus0013hzroulcqgayv",
-    question: "Qui animait le jeu télévisé le Bigdil ?",
-    answer: "Vincent Lagaf'",
-    categoryId: "cmck8wdgi0003hzroikw9krfe",
-    category: "tv_cinema",
-    difficulty: "facile",
-    badAnswers: ["Philippe Risoli", "Laurence Boccolini", "Nagui"],
-  },
-  {
-    id: "cmguz1h970005hzaufq8fqsrb",
-    question: "Quelle actrice incarne Katniss Everdeen dans 'Hunger Games' ?",
-    answer: "Jennifer Lawrence",
-    categoryId: "cmck8wdgi0003hzroikw9krfe",
-    category: "tv_cinema",
-    difficulty: "facile",
-    badAnswers: ["Emma Watson", "Scarlett Johansson", "Kristen Stewart"],
-  },
-];
-
-type TransformedQuestion = Question & {
-  answers: { answer: string; isValid: boolean }[];
-};
-
-const transformedQuestions: TransformedQuestion[] = questions.map(
-  (question) => ({
+const fetchQuestions = async () => {
+  const response = await fetch(
+    "https://quizzapi.jomoreschi.fr/api/v2/quiz?limit=5&category=tv_cinema&difficulty=facile"
+  );
+  const data = await response.json();
+  return data.quizzes.map((question: Question) => ({
     ...question,
     answers: [question.answer, ...question.badAnswers].sort(
       () => Math.random() - 0.5
     ),
-  })
-);
+  }));
+};
 
 Alpine.store("quizz", {
+  isLoading: true,
+  questions: [],
   currentQuestionIndex: 0,
   selectedAnswer: "",
   isSubmitted: false,
+  async init() {
+    try {
+      this.questions = await fetchQuestions();
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      this.isLoading = false;
+    }
+  },
   get currentQuestion() {
-    return transformedQuestions[this.currentQuestionIndex];
+    return this.questions[this.currentQuestionIndex];
   },
   onSubmitQuestion() {
     if (this.selectedAnswer) {
@@ -86,12 +49,12 @@ Alpine.store("quizz", {
     }
   },
   nextQuestion() {
-    if (this.currentQuestionIndex < transformedQuestions.length - 1) {
+    if (this.currentQuestionIndex < this.questions.length - 1) {
       this.currentQuestionIndex = this.currentQuestionIndex + 1;
       this.isSubmitted = false;
       this.selectedAnswer = "";
     } else {
-        alert('Votre score est ...')
+      alert("Votre score est ...");
     }
   },
 });
