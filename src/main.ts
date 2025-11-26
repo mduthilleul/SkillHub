@@ -3,14 +3,14 @@ import Alpine from "alpinejs";
 (window as any).Alpine = Alpine;
 
 type Question = {
-    id:string;
-    question: string
-    answer: string,
-    categoryId: string,
-    category: string,
-    difficulty: string,
-    badAnswers: string[],
-}
+  id: string;
+  question: string;
+  answer: string;
+  categoryId: string;
+  category: string;
+  difficulty: string;
+  badAnswers: string[];
+};
 
 const questions: Question[] = [
   {
@@ -61,16 +61,31 @@ const questions: Question[] = [
 ];
 
 type TransformedQuestion = Question & {
-    answers: string[]
-}
+  answers: {answer: string, isValid: boolean}[];
+};
 
-const transformedQuestions: TransformedQuestion[] = questions.map(question =>  ({
+const transformedQuestions: TransformedQuestion[] = questions.map(
+  (question) => ({
     ...question,
-    answers: [question.answer, ...question.badAnswers].sort(() => Math.random() - 0.5)
-}))
+    answers: [
+      question.answer,
+      ...question.badAnswers,
+    ].sort(() => Math.random() - 0.5),
+  })
+);
 
 Alpine.store("quizz", {
-  questions: transformedQuestions,
+  currentQuestionIndex: 0,
+  selectedAnswer: '',
+  isSubmitted: false,
+  get currentQuestion () {
+    return transformedQuestions[this.currentQuestionIndex]
+  },
+  onSubmitQuestion () {
+    if(this.selectedAnswer) {
+        this.isSubmitted = true
+    }
+  }
 });
 
 Alpine.start();
